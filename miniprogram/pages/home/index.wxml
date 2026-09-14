@@ -1,0 +1,81 @@
+<view class="page-shell">
+  <view class="hero">
+    <text class="eyebrow">EMBODIED ECHO</text>
+    <text class="page-title">让实践产生认知，让认知形成回响</text>
+    <text class="page-subtitle">从真实问题出发：看懂、作答、解释、验证，再把认知带回新的具身智能实践。</text>
+  </view>
+
+  <view class="card progress-card">
+    <view class="progress-head">
+      <view>
+        <text class="card-title">当前学习进度</text>
+        <text class="card-copy">感知与传感器 · 传感器选择</text>
+      </view>
+      <text class="progress-number">{{progressPercent}}%</text>
+    </view>
+    <view class="progress-track"><view class="progress-fill" style="width: {{progressPercent}}%;"></view></view>
+    <view class="status-row">
+      <text class="status-item {{progress.lessonCompleted ? 'done' : ''}}">微课</text>
+      <text class="status-item {{progress.challengePassed ? 'done' : ''}}">挑战</text>
+      <text class="status-item {{progress.sensorUnlocked ? 'done' : ''}}">点亮</text>
+      <text class="status-item {{progress.caseCompleted ? 'done' : ''}}">迁移</text>
+    </view>
+    <button class="primary-button" bindtap="continueLearning">{{primaryLabel}}</button>
+    <button class="secondary-button" bindtap="openPuzzle">查看完整知识导图</button>
+  </view>
+
+  <view class="card agent-entry" bindtap="openAgent">
+    <view class="agent-entry-icon">响</view>
+    <view class="agent-entry-copy">
+      <text class="card-title">有问题，直接问学习伙伴</text>
+      <text class="card-copy">带着当前知识点进入对话，用思维导图讲懂概念、方案与应用边界。</text>
+    </view>
+    <text class="agent-entry-arrow">→</text>
+  </view>
+
+  <text class="section-title">一次学习怎么完成</text>
+  <view class="loop-grid">
+    <view class="loop-item"><text class="loop-index">01</text><text class="loop-name">看微课</text><text class="loop-copy">从场景约束理解概念</text></view>
+    <view class="loop-item"><text class="loop-index">02</text><text class="loop-name">做判断</text><text class="loop-copy">先提交自己的方案</text></view>
+    <view class="loop-item"><text class="loop-index">03</text><text class="loop-name">讲明白</text><text class="loop-copy">用费曼方式解释取舍</text></view>
+    <view class="loop-item"><text class="loop-index">04</text><text class="loop-name">去迁移</text><text class="loop-copy">应用到机器人案例</text></view>
+  </view>
+
+  <view class="card notice-card">
+    <text class="pill">离线可用</text>
+    <text class="card-title notice-title">你的进度只保存在当前微信设备</text>
+    <text class="card-copy">首版不需要登录，也不读取头像、昵称、手机号或通讯录。规则反馈会明确标注，不假装由真人导师或在线模型生成。</text>
+  </view>
+  <view wx:if="{{saveError}}" class="error-banner">{{saveError}}</view>
+</view>
+
+<!-- 引导层必须放在 page-shell 外：.page-shell > view 规则会强制 position:relative，会破坏遮罩的 fixed 全屏定位 -->
+<view wx:if="{{showOnboarding}}" class="celebration-mask onboard-mask" catchtouchmove="noop">
+  <view class="onboard-card">
+    <block wx:if="{{onboardStep === 0}}">
+      <text class="onboard-emoji">🏭</text>
+      <text class="onboard-title">夜班仓库里，机器人撞倒了货架</text>
+      <text class="onboard-copy">它身上装着 8 个传感器，为什么还是撞了上去？答案，就藏在你即将点亮的每一块拼图里。</text>
+      <button class="primary-button onboard-button" bindtap="nextOnboard">看看怎么玩 →</button>
+    </block>
+    <block wx:elif="{{onboardStep === 1}}">
+      <text class="onboard-emoji">🧩</text>
+      <text class="onboard-title">点亮九格能力拼图</text>
+      <text class="onboard-copy">每一格，都是机器人产品岗的一项真实能力。看微课 → 做挑战 → 讲明白 → 点亮拼图，最后把本事用到真实机器人案例上。</text>
+      <button class="primary-button onboard-button" bindtap="nextOnboard">明白了 →</button>
+    </block>
+    <block wx:else>
+      <text class="onboard-emoji">👋</text>
+      <text class="onboard-title">先认识一下你</text>
+      <text class="onboard-copy">学习伙伴小响会按你的背景调整讲法：不堆术语，也不把你当外行。</text>
+      <button class="onboard-choice" data-level="rookie" bindtap="chooseLevel">🌱 我是小白，从零开始</button>
+      <button class="onboard-choice" data-level="product" bindtap="chooseLevel">💼 我做过产品，想转机器人方向</button>
+      <button class="onboard-choice" data-level="tech" bindtap="chooseLevel">🔧 我懂技术，想补产品视角</button>
+    </block>
+    <view class="onboard-dots">
+      <text class="onboard-dot {{onboardStep === 0 ? 'active' : ''}}"></text>
+      <text class="onboard-dot {{onboardStep === 1 ? 'active' : ''}}"></text>
+      <text class="onboard-dot {{onboardStep === 2 ? 'active' : ''}}"></text>
+    </view>
+  </view>
+</view>

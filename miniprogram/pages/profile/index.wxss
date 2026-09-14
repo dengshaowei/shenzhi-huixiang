@@ -1,0 +1,43 @@
+.profile-page { padding-bottom: 92rpx; }
+.continue-card { border-color: rgba(194, 65, 12, 0.24); background: linear-gradient(145deg, #ffffff, var(--primary-soft)); }
+.continue-card:active, .project-entry:active, .library-row:active { transform: scale(0.985); }
+.continue-head, .section-head { display: flex; align-items: center; justify-content: space-between; }
+.continue-time, .section-note { color: var(--muted); font-size: 18rpx; }
+.continue-title { margin-top: 18rpx; }
+.continue-action { display: block; margin-top: 20rpx; color: var(--primary); font-size: 22rpx; font-weight: 900; }
+.empty-continue { border-style: dashed; background: var(--surface-soft); }
+.empty-continue .secondary-button { margin-top: 20rpx; }
+.overview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14rpx; margin-top: 22rpx; }
+.overview-tile { padding: 22rpx 10rpx; text-align: center; border: 1rpx solid var(--line); border-radius: 24rpx; background: #ffffff; }
+.overview-number { display: block; color: var(--primary); font-size: 34rpx; font-weight: 900; }
+.overview-label { display: block; margin-top: 5rpx; color: var(--muted); font-size: 18rpx; }
+.project-entry { display: flex; align-items: center; gap: 18rpx; border-color: rgba(251, 113, 133, 0.28); background: linear-gradient(145deg, #ffffff, var(--coral-soft)); }
+.project-icon { display: flex; align-items: center; justify-content: center; flex: 0 0 72rpx; width: 72rpx; height: 72rpx; border-radius: 24rpx; color: #ffffff; font-size: 24rpx; font-weight: 900; background: var(--coral); }
+.project-copy, .library-copy { flex: 1; }
+.project-arrow, .library-arrow { color: var(--primary); font-size: 32rpx; font-weight: 900; }
+.section-head { margin-top: 42rpx; }
+.section-head .section-title { margin: 0; }
+.library-list { margin-top: 18rpx; overflow: hidden; border: 1rpx solid var(--line); border-radius: 28rpx; background: #ffffff; }
+.library-row { display: flex; align-items: center; gap: 16rpx; padding: 20rpx; border-bottom: 1rpx solid var(--line); }
+.library-row:last-child { border-bottom: 0; }
+.library-icon { display: flex; align-items: center; justify-content: center; flex: 0 0 52rpx; width: 52rpx; height: 52rpx; border-radius: 18rpx; color: var(--primary); font-size: 20rpx; font-weight: 900; background: var(--sun-soft); }
+.recent-icon { color: var(--success); background: var(--success-soft); }
+.library-title { display: block; color: var(--text); font-size: 23rpx; font-weight: 850; }
+.library-meta { display: block; margin-top: 5rpx; color: var(--muted); font-size: 18rpx; }
+.empty-panel { margin-top: 18rpx; padding: 28rpx; text-align: center; border: 1rpx dashed var(--line); border-radius: 26rpx; color: var(--muted); font-size: 20rpx; line-height: 1.7; background: var(--surface-soft); }
+.empty-panel text { display: block; }
+.score-card { display: flex; align-items: center; gap: 28rpx; border-color: rgba(250, 204, 21, 0.42); background: linear-gradient(145deg, #ffffff, var(--sun-soft)); }
+.score-ring { display: flex; align-items: baseline; justify-content: center; flex: 0 0 126rpx; width: 126rpx; height: 126rpx; padding-top: 34rpx; border: 9rpx solid var(--sun); border-radius: 50%; background: #ffffff; }
+.score-number { color: var(--primary); font-size: 38rpx; font-weight: 900; }
+.score-unit { color: var(--primary); font-size: 18rpx; }
+.score-copy { flex: 1; }
+.record-summary { display: block; margin-top: 10rpx; color: var(--text); font-size: 20rpx; }
+.record-row { display: flex; justify-content: space-between; gap: 24rpx; padding: 18rpx 0; border-bottom: 1rpx solid var(--line); color: var(--muted); font-size: 22rpx; }
+.record-row:last-child { border-bottom: 0; }
+.record-value { padding: 6rpx 12rpx; border-radius: 999rpx; color: var(--primary); font-weight: 800; background: var(--primary-soft); }
+.evidence-card { border-color: rgba(47, 125, 97, 0.26); background: linear-gradient(145deg, #ffffff, var(--success-soft)); }
+.evidence-line { display: block; margin-top: 14rpx; color: var(--success); font-size: 21rpx; line-height: 1.55; }
+.service-card { margin-top: 18rpx; }
+.service-copy { display: block; margin-top: 12rpx; color: var(--muted); font-size: 19rpx; line-height: 1.55; }
+
+.level-icon { background: var(--sun-soft); color: #8a6d00; }

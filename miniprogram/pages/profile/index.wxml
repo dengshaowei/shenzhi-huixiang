@@ -1,0 +1,87 @@
+<view class="page-shell profile-page">
+  <text class="eyebrow">MY LEARNING</text>
+  <text class="page-title">我的学习空间</text>
+  <text class="page-subtitle">继续学习、收藏知识点、回看记录，也可以导入自己的项目生成专属学习任务。</text>
+
+  <view wx:if="{{latest}}" class="card continue-card" data-id="{{latest.id}}" bindtap="openLibraryItem">
+    <view class="continue-head"><text class="pill">继续学习</text><text class="continue-time">{{latest.updatedLabel}}</text></view>
+    <text class="card-title continue-title">{{latest.title}}</text>
+    <text class="card-copy">{{latest.subtitle}}</text>
+    <text class="continue-action">接着上次的位置继续 →</text>
+  </view>
+  <view wx:else class="card empty-continue">
+    <text class="card-title">从一个知识点开始</text>
+    <text class="card-copy">打开知识导图，选择你想了解的领域。学习记录会自动出现在这里。</text>
+    <button class="secondary-button" bindtap="openMap">浏览知识导图</button>
+  </view>
+
+  <view class="overview-grid">
+    <view class="overview-tile"><text class="overview-number">{{favorites.length}}</text><text class="overview-label">我的收藏</text></view>
+    <view class="overview-tile"><text class="overview-number">{{recent.length}}</text><text class="overview-label">最近学习</text></view>
+    <view class="overview-tile"><text class="overview-number">{{progressPercent}}%</text><text class="overview-label">路径进度</text></view>
+  </view>
+
+  <view class="card project-entry" bindtap="openProject">
+    <view class="project-icon">项</view>
+    <view class="project-copy">
+      <text class="card-title">我的项目学习</text>
+      <text class="card-copy">导入 PRD、Word 或 PDF，生成项目思维导图、学习计划和题目。</text>
+    </view>
+    <text class="project-arrow">→</text>
+  </view>
+
+  <view class="card project-entry" bindtap="changeLevel">
+    <view class="project-icon level-icon">档</view>
+    <view class="project-copy">
+      <text class="card-title">我的学习背景：{{levelLabel}}</text>
+      <text class="card-copy">小响会按你的背景调整讲法，点这里随时更换。</text>
+    </view>
+    <text class="project-arrow">→</text>
+  </view>
+
+  <view class="section-head"><text class="section-title">我的收藏</text><text class="section-note">知识点快捷入口</text></view>
+  <view wx:if="{{favorites.length}}" class="library-list">
+    <view wx:for="{{favorites}}" wx:key="id" class="library-row" data-id="{{item.id}}" bindtap="openLibraryItem">
+      <view class="library-icon">★</view>
+      <view class="library-copy"><text class="library-title">{{item.title}}</text><text class="library-meta">{{item.kindLabel}} · {{item.subtitle}}</text></view>
+      <text class="library-arrow">→</text>
+    </view>
+  </view>
+  <view wx:else class="empty-panel"><text>还没有收藏</text><text>在知识点详情页点击“收藏”，方便以后快速回来。</text></view>
+
+  <view class="section-head"><text class="section-title">最近学习</text><text class="section-note">自动保留最近 12 条</text></view>
+  <view wx:if="{{recent.length}}" class="library-list">
+    <view wx:for="{{recent}}" wx:key="id" class="library-row" data-id="{{item.id}}" bindtap="openLibraryItem">
+      <view class="library-icon recent-icon">近</view>
+      <view class="library-copy"><text class="library-title">{{item.title}}</text><text class="library-meta">{{item.subtitle}} · {{item.updatedLabel}}</text></view>
+      <text class="library-arrow">→</text>
+    </view>
+  </view>
+  <view wx:else class="empty-panel"><text>暂无最近学习</text><text>你浏览过的领域和知识点会显示在这里。</text></view>
+
+  <text class="section-title">掌握记录</text>
+  <view class="card score-card">
+    <view class="score-ring"><text class="score-number">{{progressPercent}}</text><text class="score-unit">%</text></view>
+    <view class="score-copy">
+      <text class="card-title">传感器选择路径</text>
+      <text class="record-summary">微课 {{progress.lessonCompleted ? '✓' : '○'}} · 挑战 {{progress.challengePassed ? '✓' : '○'}} · 迁移 {{progress.caseCompleted ? '✓' : '○'}}</text>
+      <text class="card-copy">已尝试 {{progress.attempts}} 次</text>
+    </view>
+  </view>
+
+  <view wx:if="{{progress.evidence.length}}" class="card evidence-card">
+    <text class="card-title">最近一次掌握依据</text>
+    <text wx:for="{{progress.evidence}}" wx:key="*this" class="evidence-line">✓ {{item}}</text>
+  </view>
+
+  <view class="section-head"><text class="section-title">数据与服务</text><text class="section-note">本地优先</text></view>
+  <view class="card service-card">
+    <view class="record-row"><text>学习数据</text><text class="record-value">当前设备保存</text></view>
+    <view class="record-row"><text>云端 Agent</text><text class="record-value">{{cloudStatusLabel}}</text></view>
+    <text class="service-copy">{{cloudMessage}}</text>
+    <text class="service-copy">课程 {{progress.contentVersion}} · 规则 {{progress.ruleVersion}}</text>
+  </view>
+
+  <button class="danger-button" bindtap="resetProgress">重置本地学习进度</button>
+  <view wx:if="{{saveError}}" class="error-banner">{{saveError}}</view>
+</view>

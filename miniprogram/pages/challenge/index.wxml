@@ -1,0 +1,29 @@
+<view class="page-shell">
+  <text class="eyebrow">PRACTICE & TRANSFER</text>
+  <text class="page-title">不是答完，而是讲明白</text>
+  <text class="page-subtitle">挑战会先记录你的判断，再检查因果、边界和迁移证据。</text>
+
+  <view class="card task-card">
+    <view class="task-head"><text class="pill">主线挑战</text><text class="task-state">{{progress.sensorUnlocked ? '已掌握' : (progress.attempts > 0 ? '待重试' : '未开始')}}</text></view>
+    <text class="card-title task-title">传感器选择与费曼复述</text>
+    <text class="card-copy">根据仓储场景选择感知方案，并向非技术同事解释为什么这样选。</text>
+    <view class="task-meta"><text>尝试 {{progress.attempts}} 次</text><text>规则版本 {{progress.ruleVersion}}</text></view>
+    <button class="primary-button" bindtap="openFeynman">{{progress.sensorUnlocked ? '查看掌握证据' : '开始 / 继续挑战'}}</button>
+  </view>
+
+  <view class="card task-card {{progress.sensorUnlocked ? '' : 'locked-card'}}">
+    <view class="task-head"><text class="pill">迁移任务</text><text class="task-state">{{progress.caseCompleted ? '已完成' : (progress.sensorUnlocked ? '已解锁' : '未解锁')}}</text></view>
+    <text class="card-title task-title">夜间仓储机器人案例</text>
+    <text class="card-copy">光照下降、包装反光、人员混行时，原有感知方案应该怎样调整？</text>
+    <button class="secondary-button" bindtap="openCase">{{progress.caseCompleted ? '重新查看案例' : '进入案例'}}</button>
+  </view>
+
+  <view class="card rule-card">
+    <text class="card-title">掌握门槛</text>
+    <text class="rule-line">① 方案选择正确</text>
+    <text class="rule-line">② 不包含关键误区</text>
+    <text class="rule-line">③ 五个证据维度至少通过四个</text>
+    <text class="card-copy">模型即使接入，也只能抽取证据，不能直接点亮。</text>
+  </view>
+  <view wx:if="{{saveError}}" class="error-banner">{{saveError}}</view>
+</view>

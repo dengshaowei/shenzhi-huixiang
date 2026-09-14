@@ -1,0 +1,55 @@
+{
+  "$schema": "https://static.cloudbase.net/cli/cloudbaserc.schema.json",
+  "envId": "{{env.CLOUDBASE_ENV_ID}}",
+  "functionRoot": "cloudfunctions",
+  "functions": [
+    {
+      "name": "healthCheck",
+      "description": "身知回响 CloudBase 后台健康检查",
+      "timeout": 10,
+      "memorySize": 256,
+      "runtime": "Nodejs20.19",
+      "handler": "index.main",
+      "envVariables": {
+        "APP_ENV": "production"
+      }
+    },
+    {
+      "name": "analyzeProject",
+      "description": "身知回响项目文档解析与学习计划 Agent",
+      "timeout": 60,
+      "memorySize": 512,
+      "runtime": "Nodejs20.19",
+      "handler": "index.main",
+      "envVariables": {
+        "APP_ENV": "production",
+        "DEEPSEEK_API_KEY": "{{env.DEEPSEEK_API_KEY}}",
+        "DEEPSEEK_MODEL": "deepseek-v4-flash"
+      }
+    },
+    {
+      "name": "knowledgePack",
+      "description": "身知回响知识库私有分页接口（服务端持有内参索引）",
+      "timeout": 10,
+      "memorySize": 256,
+      "runtime": "Nodejs20.19",
+      "handler": "index.main",
+      "envVariables": {
+        "APP_ENV": "production"
+      }
+    },
+    {
+      "name": "studyChat",
+      "description": "身知回响学习伙伴对话 Agent（DeepSeek + 知识检索 grounding）",
+      "timeout": 60,
+      "memorySize": 256,
+      "runtime": "Nodejs20.19",
+      "handler": "index.main",
+      "envVariables": {
+        "APP_ENV": "production",
+        "DEEPSEEK_API_KEY": "{{env.DEEPSEEK_API_KEY}}",
+        "DEEPSEEK_MODEL": "deepseek-v4-flash"
+      }
+    }
+  ]
+}

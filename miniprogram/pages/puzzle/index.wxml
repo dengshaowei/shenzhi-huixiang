@@ -1,0 +1,52 @@
+<view class="page-shell">
+  <text class="eyebrow">OVERVIEW MIND MAP</text>
+  <text class="page-title">一张大图看懂具身智能产品能力</text>
+  <text class="page-subtitle">从中心主题向外展开四个部分、九个能力领域。点击任意领域，可以继续查看它自己的模块思维导图。</text>
+
+  <view class="map-summary">
+    <view><text class="summary-number">{{masteredCount}}</text><text class="summary-label">已点亮</text></view>
+    <view><text class="summary-number">9</text><text class="summary-label">能力域</text></view>
+    <view><text class="summary-number">1</text><text class="summary-label">首版路径</text></view>
+  </view>
+
+  <view class="mindmap-canvas">
+    <view class="mindmap-root">
+      <text class="root-kicker">中心主题</text>
+      <text class="root-title">具身智能产品能力</text>
+      <text class="root-copy">4 个部分 · 9 个领域</text>
+    </view>
+    <view class="root-connector"></view>
+
+    <view wx:for="{{groups}}" wx:key="id" class="mindmap-branch" style="--group-accent: {{item.accent}};">
+      <view class="branch-joint"></view>
+      <view class="branch-content">
+        <view class="group-node">
+          <text class="group-title">{{index + 1}}. {{item.title}}</text>
+          <text class="group-copy">{{item.summary}}</text>
+        </view>
+        <view class="domain-node-list">
+          <view
+            wx:for="{{item.domains}}"
+            wx:key="id"
+            wx:for-item="domain"
+            class="domain-node {{domain.state}}"
+            data-id="{{domain.id}}"
+            bindtap="selectDomain"
+            style="border-left-color: {{domain.accent}};"
+          >
+            <view class="domain-node-head"><text class="domain-index">{{domain.index}}</text><text class="domain-state">{{domain.stateLabel}}</text></view>
+            <text class="domain-title">{{domain.title}}</text>
+            <text class="domain-copy">{{domain.summary}}</text>
+            <view class="domain-meta"><text>{{domain.moduleCount}} 个模块</text><text>约 {{domain.estimatedMinutes}} 分钟</text></view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card legend-card">
+    <text class="card-title">大图负责定位，小图负责拆解</text>
+    <text class="card-copy">这里先展示能力全貌；进入领域后，会继续展开“领域 → 模块 → 核心知识词”。目录全部可见，正式课程逐步开放。</text>
+  </view>
+  <view wx:if="{{saveError}}" class="error-banner">{{saveError}}</view>
+</view>

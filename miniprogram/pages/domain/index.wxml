@@ -1,0 +1,82 @@
+<view class="page-shell domain-page">
+  <view wx:if="{{errorMessage}}" class="error-banner">{{errorMessage}}</view>
+
+  <block wx:if="{{domain}}">
+    <text class="eyebrow">能力域 {{domain.index}}</text>
+    <text class="page-title">{{domain.title}}</text>
+    <text class="page-subtitle">{{domain.summary}}</text>
+
+    <view class="card domain-hero" style="border-top-color: {{domain.accent}};">
+      <text class="domain-status">{{statusLabel}}</text>
+      <text class="card-title question-title">{{domain.valueQuestion}}</text>
+      <text class="card-copy">学完后：{{domain.learningOutcome}}</text>
+      <view class="domain-meta">
+        <text>{{domain.modules.length}} 个知识模块</text>
+        <text>约 {{domain.estimatedMinutes}} 分钟</text>
+      </view>
+      <text class="prerequisite">前置建议：{{domain.prerequisite}}</text>
+    </view>
+
+    <view class="section-head mindmap-heading">
+      <text class="section-title">领域思维导图</text>
+      <text class="section-note">点击模块可直接问 Agent</text>
+    </view>
+
+    <view class="domain-mindmap" style="--domain-color: {{domain.accent}};">
+      <view class="domain-map-root">
+        <text class="map-root-label">能力领域</text>
+        <text class="map-root-title">{{domain.title}}</text>
+      </view>
+      <view class="domain-map-trunk"></view>
+      <view wx:for="{{modules}}" wx:key="id" class="module-map-branch">
+        <view class="module-map-joint"></view>
+        <view class="module-map-content">
+          <view class="module-map-node" data-id="{{item.id}}" bindtap="askModule">
+            <text class="module-map-index">{{index + 1}}</text>
+            <view class="module-map-copy">
+              <text class="module-map-title">{{item.title}}</text>
+              <text class="module-map-summary">{{item.summary}}</text>
+            </view>
+            <text class="module-map-arrow">→</text>
+          </view>
+          <view class="term-node-list">
+            <text wx:for="{{item.knowledgeTerms}}" wx:key="*this" wx:for-item="term" class="term-node">{{term}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-head">
+      <text class="section-title">模块详细内容</text>
+      <text class="section-note">学习目标与入口</text>
+    </view>
+
+    <view wx:for="{{modules}}" wx:key="id" class="card module-card">
+      <view class="module-head">
+        <text class="module-index">{{index + 1}}</text>
+        <view class="module-head-actions">
+          <button class="favorite-button {{item.favorite ? 'is-favorite' : ''}}" data-id="{{item.id}}" bindtap="toggleFavorite">{{item.favorite ? '★ 已收藏' : '☆ 收藏'}}</button>
+          <text class="module-state">{{item.lessonAvailable ? '可学习' : '目录预览'}}</text>
+        </view>
+      </view>
+      <text class="card-title module-title">{{item.title}}</text>
+      <text class="card-copy">{{item.summary}}</text>
+      <view class="module-learning-map">
+        <text class="learning-map-title">这个模块要掌握</text>
+        <view class="learning-map-row">
+          <text class="learning-map-node">核心概念</text>
+          <view class="learning-map-points">
+            <text wx:for="{{item.knowledgeTerms}}" wx:key="*this" wx:for-item="term" class="learning-point">{{term}}</text>
+          </view>
+        </view>
+        <view class="learning-map-row">
+          <text class="learning-map-node">应用判断</text>
+          <text class="learning-map-copy">能结合具体机器人任务说明它的作用、选择条件和失效边界。</text>
+        </view>
+      </view>
+      <button class="module-agent-button" data-id="{{item.id}}" bindtap="askModule">围绕这个知识点问学习伙伴</button>
+    </view>
+
+    <button class="primary-button domain-action" bindtap="startLearning">{{domain.available ? '开始这条学习路径' : '课程准备中，先和 Agent 了解'}}</button>
+  </block>
+</view>

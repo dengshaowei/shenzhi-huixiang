@@ -1,0 +1,82 @@
+<view class="page-shell feynman-page">
+  <text class="eyebrow">CHALLENGE · RULE EVALUATION</text>
+  <text class="page-title">先做判断，再解释为什么</text>
+  <text class="page-subtitle">首次提交前不会显示参考结论。规则评估只检查已公开的证据维度，不会冒充在线 AI 导师。</text>
+
+  <view class="card scenario-card">
+    <text class="pill">场景约束</text>
+    <text class="card-title scenario-title">{{challenge.title}}</text>
+    <text class="card-copy">{{challenge.scenario}}</text>
+  </view>
+
+  <text class="section-title">{{challenge.prompt}}</text>
+  <view
+    wx:for="{{challenge.options}}"
+    wx:key="id"
+    class="option-card {{selectedOptionId === item.id ? 'selected' : ''}} {{hasSubmitted ? 'submitted' : ''}}"
+    data-id="{{item.id}}"
+    bindtap="selectOption"
+  >
+    <view class="radio-dot"><view></view></view>
+    <view class="option-content"><text class="option-title">{{item.title}}</text><text class="option-copy">{{item.detail}}</text></view>
+  </view>
+
+  <text class="section-title">费曼复述</text>
+  <text class="prompt-copy">{{challenge.explanationPrompt}}</text>
+  <textarea
+    class="answer-input"
+    value="{{answer}}"
+    maxlength="600"
+    disabled="{{hasSubmitted}}"
+    placeholder="按这个顺序回答：场景约束 → 能力差异 → 方案选择 → 成本、安全或失效边界"
+    bindinput="updateAnswer"
+  ></textarea>
+  <view class="input-meta"><text>至少 40 字</text><text>{{answer.length}} / 600</text></view>
+
+  <button wx:if="{{!hasSubmitted}}" class="primary-button" bindtap="submitAttempt">提交判断与复述</button>
+
+  <view wx:if="{{hasSubmitted}}" class="result-section">
+    <view class="card result-hero {{decision.unlocked ? 'unlocked' : 'not-yet'}}">
+      <text class="result-kicker">{{decision.unlocked ? '节点已点亮' : '暂未点亮'}}</text>
+      <text class="card-title result-title">{{decision.unlocked ? '你已达到当前掌握门槛' : '已经找到证据，还需要补一块'}}</text>
+      <text class="card-copy">{{evaluation.summary}}</text>
+      <text class="choice-result">方案选择：{{challengePassed ? '通过' : '未通过'}}</text>
+    </view>
+
+    <text class="section-title">五维证据</text>
+    <view wx:for="{{evaluation.dimensions}}" wx:key="id" class="dimension-row {{item.passed ? 'passed' : 'failed'}}">
+      <text class="dimension-icon">{{item.passed ? '✓' : '!'}}</text>
+      <view><text class="dimension-label">{{item.label}}</text><text class="dimension-evidence">{{item.evidence}}</text></view>
+    </view>
+
+    <view wx:if="{{decision.reasons.length}}" class="card reason-card">
+      <text class="card-title">判定依据</text>
+      <text wx:for="{{decision.reasons}}" wx:key="*this" class="reason-line">• {{item}}</text>
+    </view>
+
+    <view class="card agent-card">
+      <text class="pill">{{agentMode}}</text>
+      <text class="card-title agent-title">Agent 的下一句追问</text>
+      <text class="card-copy">{{followUpQuestion}}</text>
+      <text class="source-heading">已核对 {{knowledgeHits.length}} 条知识依据</text>
+    </view>
+
+    <button wx:if="{{decision.unlocked}}" class="primary-button" bindtap="goToCase">进入机器人案例</button>
+    <button wx:else class="primary-button" bindtap="retry">根据反馈重新作答</button>
+  </view>
+
+  <view wx:if="{{saveError}}" class="error-banner">{{saveError}}</view>
+</view>
+
+<!-- 庆祝层必须放在 page-shell 外：.page-shell > view 规则会强制 position:relative，会破坏遮罩的 fixed 全屏定位 -->
+<view wx:if="{{celebrating}}" class="celebration-mask">
+  <view class="confetti">
+    <text class="confetti-piece piece-1"></text><text class="confetti-piece piece-2"></text><text class="confetti-piece piece-3"></text><text class="confetti-piece piece-4"></text><text class="confetti-piece piece-5"></text><text class="confetti-piece piece-6"></text><text class="confetti-piece piece-7"></text><text class="confetti-piece piece-8"></text><text class="confetti-piece piece-9"></text><text class="confetti-piece piece-10"></text><text class="confetti-piece piece-11"></text><text class="confetti-piece piece-12"></text>
+  </view>
+  <view class="celebration-card">
+    <text class="celebration-emoji">🎉</text>
+    <text class="celebration-title">拼图点亮！</text>
+    <text class="celebration-copy">「感知与传感器」已被你真正掌握——能讲清、能判断、能说出边界。实践产生认知，认知形成回响。</text>
+    <button class="celebration-button" bindtap="closeCelebration">把知识用到机器人案例 →</button>
+  </view>
+</view>

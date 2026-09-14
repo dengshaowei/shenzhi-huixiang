@@ -1,0 +1,51 @@
+<view class="page-shell lesson-page">
+  <text class="eyebrow">MICRO LESSON · 8 MIN</text>
+  <text class="page-title">如何为机器人选择传感器？</text>
+  <text class="page-subtitle">先把“参数比较”放下。真正的产品判断从场景、任务、工程和安全约束开始。</text>
+
+  <view class="path-strip">
+    <text>感知与传感器</text><text class="path-arrow">→</text><text>传感器选择</text><text class="path-arrow">→</text><text>方案取舍</text>
+  </view>
+
+  <view class="card sim-card">
+    <text class="card-title">先玩 30 秒：看懂激光雷达是干嘛的</text>
+    <text class="sim-hint">机器人"小仓"要穿过仓库通道。不用读任何文字，先拨下面的开关观察它。</text>
+    <canvas type="2d" id="lidarSim" class="sim-canvas"></canvas>
+    <view class="sim-controls">
+      <view class="sim-toggle"><switch checked="{{simLidarOn}}" bindchange="toggleLidar" color="#c2410c" /><text>激光雷达</text></view>
+      <view class="sim-toggle"><switch checked="{{simNight}}" bindchange="toggleNight" color="#c2410c" /><text>天黑</text></view>
+      <view class="sim-toggle"><switch checked="{{simReflective}}" bindchange="toggleReflective" color="#c2410c" /><text>地面反光</text></view>
+    </view>
+    <text class="sim-status">{{simStatus}}</text>
+    <button wx:if="{{simEnded}}" class="secondary-button sim-restart" bindtap="restartSim">再来一次</button>
+  </view>
+
+  <view wx:if="{{lesson.length === 0 && !saveError}}" class="card lesson-card">
+    <text class="card-title">小响正在准备微课内容…</text>
+  </view>
+
+  <view wx:for="{{lesson}}" wx:key="id" class="card lesson-card lesson-{{item.id}}">
+    <text class="lesson-label">{{item.label}}</text>
+    <text class="card-title lesson-title">{{item.title}}</text>
+    <view class="lesson-map">
+      <text class="lesson-map-node">先理解</text>
+      <text class="lesson-map-copy">{{item.body}}</text>
+    </view>
+    <view wx:if="{{item.points}}" class="point-list">
+      <text class="lesson-map-node">再拆解</text>
+      <view class="point-branch">
+        <view wx:for="{{item.points}}" wx:key="*this" wx:for-item="point" class="point-row"><text class="point-dot">•</text><text>{{point}}</text></view>
+      </view>
+    </view>
+    <view wx:if="{{item.knowledgeHit}}" class="point-source">
+      <text class="point-source-label">进一步理解</text>
+      <text class="point-source-copy">{{item.knowledgeHit.excerpt}}</text>
+    </view>
+    <button class="ask-agent-button" data-id="{{item.id}}" bindtap="askAgent">这个知识点没听懂？问学习伙伴</button>
+  </view>
+
+  <text class="lesson-evidence">{{knowledgeLabel ? '本节内容已完成知识依据核对 · ' + knowledgeLabel : '本节内容已完成知识依据核对'}}</text>
+
+  <button class="primary-button sticky-action" bindtap="finishLesson">{{alreadyCompleted ? '重新进入挑战' : '我已学完，进入挑战'}}</button>
+  <view wx:if="{{saveError}}" class="error-banner">{{saveError}}</view>
+</view>

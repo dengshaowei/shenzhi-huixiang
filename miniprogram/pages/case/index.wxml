@@ -1,0 +1,61 @@
+<view class="page-shell case-page">
+  <text class="eyebrow">ROBOT CASE · SYNTHETIC</text>
+  <text class="page-title">把知识放进变化的现场</text>
+  <text class="page-subtitle">这是教学用合成案例，不代表任何真实企业项目。你需要先提交判断，系统才展示反馈。</text>
+
+  <view wx:if="{{locked}}" class="card locked-notice">
+    <text class="card-title">案例尚未解锁</text>
+    <text class="card-copy">先完成传感器选择挑战并点亮节点，再回来做迁移任务。</text>
+  </view>
+
+  <block wx:else>
+    <view class="card case-brief">
+      <text class="pill">场景发生变化</text>
+      <text class="card-title case-title">{{caseStudy.title}}</text>
+      <text class="card-copy">{{caseStudy.scenario}}</text>
+    </view>
+
+    <text class="section-title">{{caseStudy.prompt}}</text>
+    <view
+      wx:for="{{caseStudy.options}}"
+      wx:key="id"
+      class="option-card {{selectedOptionId === item.id ? 'selected' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="selectOption"
+    >
+      <text class="option-title">{{item.title}}</text>
+      <text class="option-copy">{{item.detail}}</text>
+    </view>
+
+    <text class="section-title">说明你的产品判断</text>
+    <textarea class="reason-input" value="{{reason}}" maxlength="400" disabled="{{hasSubmitted}}" placeholder="环境变化影响了什么？哪些风险不能转移？为什么需要保留或调整当前方案？" bindinput="updateReason"></textarea>
+    <view class="input-meta"><text>至少 20 字</text><text>{{reason.length}} / 400</text></view>
+    <button wx:if="{{!hasSubmitted}}" class="primary-button" bindtap="submitCase">提交案例判断</button>
+
+    <view wx:if="{{hasSubmitted}}" class="card feedback-card {{feedback.passed ? 'passed' : 'failed'}}">
+      <text class="feedback-label">{{feedback.passed ? '迁移通过' : '需要重试'}}</text>
+      <text class="card-title feedback-title">{{feedback.title}}</text>
+      <text class="card-copy">{{feedback.body}}</text>
+      <text class="agent-mode">{{agentMode}}</text>
+      <text class="follow-up">追问：{{followUpQuestion}}</text>
+      <text class="case-evidence">已核对 {{knowledgeHits.length}} 条知识依据</text>
+      <button wx:if="{{feedback.passed}}" class="primary-button" bindtap="backHome">返回首页查看进度</button>
+      <button wx:else class="primary-button" bindtap="retry">重新判断</button>
+    </view>
+  </block>
+
+  <view wx:if="{{saveError}}" class="error-banner">{{saveError}}</view>
+</view>
+
+<!-- 庆祝层必须放在 page-shell 外：.page-shell > view 规则会强制 position:relative，会破坏遮罩的 fixed 全屏定位 -->
+<view wx:if="{{celebrating}}" class="celebration-mask">
+  <view class="confetti">
+    <text class="confetti-piece piece-1"></text><text class="confetti-piece piece-2"></text><text class="confetti-piece piece-3"></text><text class="confetti-piece piece-4"></text><text class="confetti-piece piece-5"></text><text class="confetti-piece piece-6"></text><text class="confetti-piece piece-7"></text><text class="confetti-piece piece-8"></text><text class="confetti-piece piece-9"></text><text class="confetti-piece piece-10"></text><text class="confetti-piece piece-11"></text><text class="confetti-piece piece-12"></text>
+  </view>
+  <view class="celebration-card">
+    <text class="celebration-emoji">🚀</text>
+    <text class="celebration-title">迁移成功！</text>
+    <text class="celebration-copy">你把传感器知识用到了真实机器人案例里，还守住了安全底线。这就是从"学过"到"会用"的一步。</text>
+    <button class="celebration-button" bindtap="closeCelebration">回首页看我的成长 →</button>
+  </view>
+</view>

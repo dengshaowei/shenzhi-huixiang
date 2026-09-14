@@ -1,0 +1,36 @@
+.lesson-page { padding-bottom: 176rpx; }
+.path-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 10rpx; margin-top: 28rpx; padding: 20rpx 22rpx; border: 1rpx solid rgba(194, 65, 12, 0.12); border-radius: 22rpx; color: var(--muted); font-size: 21rpx; background: var(--primary-soft); }
+.path-arrow { color: var(--primary); font-weight: 900; }
+.lesson-card { position: relative; overflow: hidden; }
+.lesson-card::before { position: absolute; top: 0; left: 0; width: 10rpx; height: 100%; content: ""; background: var(--orange); }
+.lesson-goal::before,
+.lesson-fusion::before { background: var(--primary); }
+.lesson-mistake::before { background: var(--sun); }
+.lesson-label { display: inline-flex; padding: 8rpx 14rpx; border-radius: 999rpx; color: var(--primary); font-size: 20rpx; font-weight: 800; letter-spacing: 2rpx; background: var(--primary-soft); }
+.lesson-title { margin-top: 16rpx; }
+.point-list { margin-top: 20rpx; }
+.point-row { display: flex; gap: 14rpx; margin-top: 12rpx; color: var(--text); font-size: 24rpx; line-height: 1.55; }
+.point-dot { color: var(--primary); font-weight: 900; }
+.point-source { margin-top: 22rpx; padding: 20rpx; border: 1rpx solid rgba(250, 204, 21, 0.32); border-radius: 22rpx; background: var(--sun-soft); }
+.point-source-label { display: block; color: var(--primary); font-size: 21rpx; font-weight: 800; }
+.point-source-copy { display: block; margin-top: 8rpx; color: var(--muted); font-size: 20rpx; line-height: 1.55; }
+.lesson-map { display: flex; align-items: flex-start; margin-top: 20rpx; }
+.lesson-map-node { flex: 0 0 104rpx; padding: 8rpx 10rpx; text-align: center; border-radius: 14rpx; color: #ffffff; font-size: 18rpx; font-weight: 800; background: var(--primary); }
+.lesson-map-copy { flex: 1; margin-left: 14rpx; color: var(--text); font-size: 22rpx; line-height: 1.65; }
+.point-list { display: flex; align-items: flex-start; }
+.point-branch { flex: 1; margin-left: 14rpx; }
+.lesson-evidence { display: block; margin: 28rpx 0; text-align: center; color: var(--success); font-size: 19rpx; }
+.ask-agent-button { min-height: 72rpx; margin-top: 20rpx; border: 1rpx solid rgba(194, 65, 12, 0.18); border-radius: 22rpx; color: var(--primary); font-size: 22rpx; font-weight: 800; line-height: 72rpx; background: var(--primary-soft); }
+.ask-agent-button::after { border: 0; }
+.sticky-action { position: fixed; right: 28rpx; bottom: calc(26rpx + env(safe-area-inset-bottom)); left: 28rpx; z-index: 10; box-shadow: 0 18rpx 40rpx rgba(194, 65, 12, 0.24); }
+
+/* 激光雷达互动模拟器 */
+.sim-card { padding: 24rpx; }
+.sim-hint { display: block; margin-top: 8rpx; color: var(--muted); font-size: 21rpx; line-height: 1.5; }
+.sim-canvas { display: block; width: 100%; height: 400rpx; margin-top: 16rpx; border: 1rpx solid var(--line); border-radius: 20rpx; background: #fdf1e3; }
+.sim-controls { display: flex; justify-content: space-between; margin-top: 16rpx; }
+.sim-toggle { display: flex; align-items: center; color: var(--text); font-size: 21rpx; font-weight: 700; }
+.sim-toggle switch { transform: scale(0.72); transform-origin: left center; }
+.sim-toggle text { margin-left: 2rpx; }
+.sim-status { display: block; margin-top: 14rpx; padding: 14rpx 16rpx; border-radius: 16rpx; color: var(--text); font-size: 21rpx; line-height: 1.55; background: var(--sun-soft); }
+.sim-restart { margin-top: 14rpx; }

@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": ["miniprogram-api-typings"]
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["**/*.test.ts"]
+}

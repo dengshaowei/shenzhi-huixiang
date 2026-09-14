@@ -1,0 +1,37 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/puzzle/index",
+    "pages/agent/index",
+    "pages/challenge/index",
+    "pages/profile/index",
+    "pages/domain/index",
+    "pages/lesson/index",
+    "pages/feynman/index",
+    "pages/case/index",
+    "pages/project/index"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#FFF7ED",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "身知回响",
+    "backgroundColor": "#FFF7ED",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#8C6B5A",
+    "selectedColor": "#C2410C",
+    "backgroundColor": "#FFFBF5",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/home/index", "text": "首页" },
+      { "pagePath": "pages/puzzle/index", "text": "知识导图" },
+      { "pagePath": "pages/agent/index", "text": "学习伙伴" },
+      { "pagePath": "pages/challenge/index", "text": "挑战" },
+      { "pagePath": "pages/profile/index", "text": "我的" }
+    ]
+  },
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
+  "sitemapLocation": "sitemap.json"
+}

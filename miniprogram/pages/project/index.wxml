@@ -1,0 +1,139 @@
+<view class="page-shell project-page">
+  <text class="eyebrow">PROJECT LEARNING AGENT</text>
+  <text class="page-title">让项目变成你的学习现场</text>
+  <text class="page-subtitle">导入一份 PRD、Word 或 PDF，Agent 会梳理项目结构、制定学习目标，并根据项目内容出题。</text>
+
+  <view wx:if="{{!plan}}" class="card import-card">
+    <view class="import-icon">＋</view>
+    <text class="card-title import-title">导入一个项目文件</text>
+    <text class="card-copy">支持 PDF、DOCX、Markdown、TXT，单个文件不超过 10 MB。</text>
+    <button class="primary-button" loading="{{status === 'uploading' || status === 'analyzing'}}" disabled="{{status === 'uploading' || status === 'analyzing'}}" bindtap="importProject">选择文件并生成学习计划</button>
+    <view class="privacy-note">
+      <text class="privacy-title">上传前请注意</text>
+      <text>移除密码、API Key、个人信息与未授权机密。文件只用于本次分析，云端会在解析后尝试删除临时文件。</text>
+    </view>
+  </view>
+
+  <view wx:if="{{statusText}}" class="status-card"><text class="status-dot"></text><text>{{statusText}}</text></view>
+  <view wx:if="{{status === 'uploading' || status === 'analyzing'}}" class="intelligence-loader">
+    <view class="loader-radar"><view class="radar-core">响</view><view class="radar-ring radar-ring-one"></view><view class="radar-ring radar-ring-two"></view><view class="radar-sweep"></view></view>
+    <view class="analysis-steps">
+      <view class="analysis-step is-done"><text class="step-dot"></text><text>安全读取</text></view>
+      <view class="analysis-step {{status === 'analyzing' ? 'is-done' : 'is-active'}}"><text class="step-dot"></text><text>全文遍历</text></view>
+      <view class="analysis-step {{status === 'analyzing' ? 'is-active' : ''}}"><text class="step-dot"></text><text>关系重组</text></view>
+    </view>
+    <view class="scan-line"></view>
+  </view>
+  <view wx:if="{{errorMessage}}" class="error-banner">{{errorMessage}}</view>
+  <view wx:if="{{cleanupWarning}}" class="error-banner">{{cleanupWarning}}</view>
+  <view wx:if="{{saveError}}" class="error-banner">{{saveError}}</view>
+
+  <view wx:if="{{!plan}}" class="generic-section">
+    <text class="section-title">暂时没有项目也可以学习</text>
+    <text class="generic-copy">使用通用知识导图选择能力领域，学习伙伴会检索内置知识并生成思维导图。</text>
+    <view class="generic-actions"><button class="secondary-button" bindtap="openMap">打开知识导图</button><button class="secondary-button" bindtap="openCompanion">问学习伙伴</button></view>
+  </view>
+
+  <block wx:if="{{plan}}">
+    <view class="card project-hero">
+      <view class="project-meta"><text class="pill">{{plan.mode === 'deepseek' ? 'DeepSeek Agent' : '规则降级模式'}}</text><text class="file-name">原文件名已隐藏</text></view>
+      <text class="card-title project-title">{{plan.title}}</text>
+      <text class="project-purpose-label">AGENT 提取的项目用途</text>
+      <text class="card-copy">{{plan.summary}}</text>
+      <text class="agent-notice">{{plan.notice}}</text>
+      <button class="primary-button project-agent-button" bindtap="openProjectCompanion">围绕这个项目问小响</button>
+    </view>
+
+    <view wx:if="{{documentCoverage.traversalPercent}}" class="coverage-panel">
+      <view class="coverage-head"><view><text class="eyebrow">FULL DOCUMENT SCAN</text><text class="card-title">全文理解覆盖</text></view><text class="coverage-percent">{{documentCoverage.traversalPercent}}%</text></view>
+      <view class="coverage-track"><view class="coverage-fill" style="width: {{documentCoverage.traversalPercent}}%"></view><view class="coverage-glow"></view></view>
+      <view class="coverage-metrics">
+        <view><text class="metric-number">{{documentCoverage.characterCount}}</text><text class="metric-label">字符</text></view>
+        <view><text class="metric-number">{{documentCoverage.paragraphCount}}</text><text class="metric-label">段落</text></view>
+        <view><text class="metric-number">{{documentCoverage.chunkCount}}</text><text class="metric-label">文本块</text></view>
+        <view><text class="metric-number">{{documentCoverage.representedChunkCount}}</text><text class="metric-label">证据块</text></view>
+      </view>
+      <text class="coverage-note">系统遍历全文后提取跨章节证据，再由 Agent 重组关系；不是只截取文档开头。</text>
+    </view>
+
+    <view class="card project-progress-card">
+      <view class="question-head"><text class="card-title">项目掌握证据</text><text>{{passedCount}} / {{plan.questions.length}}</text></view>
+      <view class="progress-track"><view class="progress-fill" style="width: {{plan.questions.length ? passedCount * 100 / plan.questions.length : 0}}%"></view></view>
+      <text class="card-copy">{{nextAction}}</text>
+      <text wx:if="{{progress.completed}}" class="completion-proof">已完成：每道项目题均留下了本地可解释证据。</text>
+    </view>
+
+    <text class="section-title">项目学习目标</text>
+    <view class="goal-grid"><view wx:for="{{plan.goals}}" wx:key="*this" class="goal-card"><text class="goal-index">{{index + 1}}</text><text>{{item}}</text></view></view>
+
+    <block wx:if="{{plan.insights.length}}">
+      <view class="section-heading-row"><text class="section-title">Agent 项目洞察</text><text class="section-hint">点击筛选</text></view>
+      <scroll-view class="insight-filter-scroll" scroll-x="true">
+        <view class="insight-filters">
+          <button class="insight-filter {{insightFilter === 'all' ? 'is-active' : ''}}" data-kind="all" bindtap="filterInsights">全部</button>
+          <button class="insight-filter {{insightFilter === 'decision' ? 'is-active' : ''}}" data-kind="decision" bindtap="filterInsights">关键决策</button>
+          <button class="insight-filter {{insightFilter === 'risk' ? 'is-active' : ''}}" data-kind="risk" bindtap="filterInsights">风险</button>
+          <button class="insight-filter {{insightFilter === 'gap' ? 'is-active' : ''}}" data-kind="gap" bindtap="filterInsights">信息缺口</button>
+          <button class="insight-filter {{insightFilter === 'metric' ? 'is-active' : ''}}" data-kind="metric" bindtap="filterInsights">指标</button>
+        </view>
+      </scroll-view>
+      <view class="insight-grid">
+        <view wx:for="{{visibleInsights}}" wx:key="id" wx:for-item="insight" class="insight-card insight-{{insight.kind}}" style="animation-delay: {{index * 80}}ms">
+          <view class="insight-head"><text class="insight-kind">{{insight.kind === 'risk' ? '风险' : insight.kind === 'gap' ? '缺口' : insight.kind === 'metric' ? '指标' : '决策'}}</text><text class="insight-spark">✦</text></view>
+          <text class="insight-title">{{insight.title}}</text><text class="insight-detail">{{insight.detail}}</text>
+          <text class="insight-evidence">依据 {{insight.evidence.length}} 条跨文档证据</text>
+        </view>
+      </view>
+    </block>
+
+    <view class="section-heading-row"><text class="section-title">互动项目图谱</text><button class="map-expand-button" bindtap="expandAllMapGroups">展开 / 收起全部</button></view>
+    <text class="map-guide">点击主分支展开关系，再点子节点查看原文证据。</text>
+    <view class="project-mindmap intelligent-map">
+      <view class="map-root intelligent-root"><view class="root-orbit root-orbit-one"></view><view class="root-orbit root-orbit-two"></view><text class="map-root-label">PROJECT CORE</text><text class="map-root-title">{{plan.title}}</text><text class="root-summary">{{plan.summary}}</text></view>
+      <view class="map-trunk flowing-trunk"></view>
+      <view wx:for="{{mapGroups}}" wx:key="id" wx:for-item="group" class="smart-group group-{{group.kind}} {{group.expanded ? 'is-expanded' : ''}}" style="animation-delay: {{index * 100}}ms">
+        <view class="smart-group-line"></view>
+        <view class="smart-group-card" data-id="{{group.id}}" bindtap="toggleMapGroup">
+          <view class="smart-group-head"><text class="group-kind">{{group.kindLabel}}</text><text class="group-toggle">{{group.expanded ? '−' : '+'}}</text></view>
+          <text class="smart-group-title">{{group.title}}</text><text class="smart-group-summary">{{group.summary}}</text>
+          <view class="relation-pill"><text class="relation-flow"></text><text>{{group.relation}}</text></view>
+        </view>
+        <view wx:if="{{group.expanded}}" class="smart-children">
+          <view wx:for="{{group.children}}" wx:key="id" wx:for-item="node" class="smart-node {{selectedMapNode.id === node.id ? 'is-focused' : ''}}" data-group-id="{{group.id}}" data-node-id="{{node.id}}" catchtap="focusMapNode" style="animation-delay: {{index * 70}}ms">
+            <view class="node-pulse"></view><view class="node-copy"><text class="node-title">{{node.title}}</text><text class="node-detail">{{node.detail}}</text></view><text class="node-arrow">›</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{selectedMapNode}}" class="node-evidence-panel">
+      <view class="evidence-panel-head"><text class="eyebrow">NODE EVIDENCE</text><text class="evidence-count">{{selectedMapNode.evidence.length}} 条</text></view>
+      <text class="card-title">{{selectedMapNode.title}}</text><text class="card-copy">{{selectedMapNode.detail}}</text>
+      <text wx:for="{{selectedMapNode.evidence}}" wx:key="*this" class="node-evidence-item">依据摘要：{{item}}</text>
+    </view>
+
+    <text class="section-title">项目题目</text>
+    <view wx:if="{{currentQuestion}}" class="card question-card">
+      <view class="question-head"><text class="pill">{{currentQuestion.skill}}</text><text>{{questionIndex + 1}} / {{plan.questions.length}}</text></view>
+      <text class="card-title question-title">{{currentQuestion.prompt}}</text>
+      <textarea class="project-answer" value="{{answer}}" disabled="{{answerSubmitted}}" maxlength="800" placeholder="结合项目目标、约束和具体内容，用自己的话回答。" bindinput="updateAnswer"></textarea>
+      <button wx:if="{{!answerSubmitted}}" class="primary-button" bindtap="submitAnswer">提交项目回答</button>
+      <view wx:if="{{answerSubmitted}}" class="answer-feedback {{feedback.passed ? 'passed' : 'retry'}}">
+        <text class="feedback-title">{{feedback.title}}</text>
+        <text class="feedback-body">{{feedback.body}}</text>
+        <text class="reference-title">参考要点</text>
+        <text wx:for="{{currentQuestion.referencePoints}}" wx:key="*this" class="reference-point">• {{item}}</text>
+        <button wx:if="{{feedback.passed}}" class="secondary-button" bindtap="nextQuestion">{{progress.completed ? '查看其他题目' : '下一道未通过题目'}}</button>
+        <button wx:else class="secondary-button" bindtap="retryQuestion">根据反馈重新作答</button>
+      </view>
+    </view>
+
+    <button class="secondary-button replace-button" bindtap="importProject">重新导入项目</button>
+    <button class="danger-button" bindtap="clearProject">移除当前项目计划</button>
+  </block>
+
+  <view wx:if="{{celebrating}}" class="celebration-mask" catchtouchmove="noop">
+    <view class="confetti"><text class="confetti-piece piece-1"></text><text class="confetti-piece piece-2"></text><text class="confetti-piece piece-3"></text><text class="confetti-piece piece-4"></text><text class="confetti-piece piece-5"></text><text class="confetti-piece piece-6"></text><text class="confetti-piece piece-7"></text><text class="confetti-piece piece-8"></text><text class="confetti-piece piece-9"></text><text class="confetti-piece piece-10"></text><text class="confetti-piece piece-11"></text><text class="confetti-piece piece-12"></text></view>
+    <view class="celebration-card"><text class="celebration-emoji">🧭</text><text class="celebration-title">项目理解已闭环</text><text class="celebration-copy">你已经完成全部项目题目，并留下了可解释证据。现在可以让小响换一个场景检验迁移能力。</text><button class="celebration-button" bindtap="closeProjectCelebration">查看我的项目图谱</button></view>
+  </view>
+</view>

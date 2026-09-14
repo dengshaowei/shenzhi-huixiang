@@ -1,0 +1,83 @@
+<view class="agent-page">
+  <view class="agent-context">
+    <view>
+      <text class="context-label">当前学习上下文</text>
+      <text class="context-title">{{context.domainTitle}}</text>
+      <text class="context-module">{{context.moduleTitle}}</text>
+    </view>
+    <button class="change-context" bindtap="openMap">换知识点</button>
+  </view>
+
+  <scroll-view class="message-list" scroll-y="true" scroll-into-view="{{scrollTarget}}">
+    <view class="message-padding">
+      <view wx:for="{{messages}}" wx:key="id" id="{{item.id}}" class="message-row message-row--{{item.role}}">
+        <view class="avatar avatar--{{item.role}}">{{item.role === 'agent' ? '响' : '我'}}</view>
+        <view class="message-bubble {{item.thinking ? 'message-bubble--thinking' : ''}}">
+          <text class="message-role">{{item.role === 'agent' ? '小响' : '我的问题'}}</text>
+
+          <view wx:if="{{item.thinking}}" class="thinking-row">
+            <view class="thinking-dots"><text class="dot"></text><text class="dot"></text><text class="dot"></text></view>
+            <text class="thinking-text">小响正在翻知识库…</text>
+          </view>
+
+          <block wx:else>
+            <text class="message-text">{{item.text}}</text>
+            <view wx:if="{{item.mindMap}}" class="answer-mindmap">
+              <view class="answer-map-root">
+                <text class="answer-root-label">知识中心</text>
+                <text class="answer-root-title">{{item.mindMap.rootTitle}}</text>
+                <text class="answer-root-summary">{{item.mindMap.rootSummary}}</text>
+              </view>
+              <view class="answer-map-trunk"></view>
+              <view wx:for="{{item.mindMap.branches}}" wx:key="id" wx:for-item="branch" class="answer-map-branch">
+                <view class="answer-branch-line"></view>
+                <view class="answer-branch-card">
+                  <text class="answer-branch-title">{{branch.title}}</text>
+                  <view wx:for="{{branch.points}}" wx:key="*this" wx:for-item="point" class="answer-point-row">
+                    <text class="answer-point-dot"></text>
+                    <text class="answer-point-text">{{point}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+            <view wx:if="{{item.followUpQuestion}}" class="follow-up-card">
+              <text class="follow-up-label">继续想一想</text>
+              <text class="follow-up-text">{{item.followUpQuestion}}</text>
+            </view>
+            <view wx:if="{{item.suggestions.length > 0}}" class="suggestion-row">
+              <button wx:for="{{item.suggestions}}" wx:key="*this" wx:for-item="suggestion" class="suggestion-chip" data-question="{{suggestion}}" bindtap="useSuggestion">{{suggestion}}</button>
+            </view>
+            <view class="message-meta">
+              <text wx:if="{{item.toolsUsedText}}" class="evidence-note tools-note">⚡ {{item.toolsUsedText}}</text>
+              <text wx:if="{{item.evidenceCount}}" class="evidence-note">已核对 {{item.evidenceCount}} 条知识依据</text>
+              <text wx:if="{{item.source === 'cloud'}}" class="source-tag source-tag--cloud">云端回复</text>
+              <text wx:if="{{item.source === 'local'}}" class="source-tag source-tag--local">离线模式</text>
+            </view>
+            <view wx:if="{{item.source !== 'none'}}" class="feedback-actions">
+              <text class="feedback-prompt">这次回答解决问题了吗？</text>
+              <button class="feedback-button {{item.rating === 'helpful' ? 'is-selected' : ''}}" data-id="{{item.id}}" data-rating="helpful" disabled="{{item.rating}}" bindtap="rateReply">有帮助</button>
+              <button class="feedback-button {{item.rating === 'needs-repair' ? 'is-selected' : ''}}" data-id="{{item.id}}" data-rating="needs-repair" disabled="{{item.rating}}" bindtap="rateReply">换种讲法</button>
+            </view>
+            <text wx:if="{{item.role === 'agent' && !item.grounded}}" class="not-grounded">当前未找到足够知识库依据，以上回答基于通用产品常识，建议补充具体场景。</text>
+          </block>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="agent-composer">
+    <scroll-view class="prompt-scroll" scroll-x="true">
+      <view class="prompt-row">
+        <button wx:for="{{quickPrompts}}" wx:key="id" class="prompt-button" data-question="{{item.question}}" bindtap="usePrompt">{{item.label}}</button>
+      </view>
+    </scroll-view>
+    <view class="composer-row">
+      <textarea class="chat-input" value="{{draft}}" auto-height="true" maxlength="260" placeholder="问一个具体问题，例如：为什么仓库机器人不能只用相机？" bindinput="updateDraft"></textarea>
+      <button class="send-button" disabled="{{sending}}" bindtap="sendQuestion">{{sending ? '…' : '发送'}}</button>
+    </view>
+    <view class="composer-actions">
+      <text>{{agentMode}}</text>
+      <view><text class="action-link" bindtap="openLesson">{{context.kind === 'project' ? '回项目做题' : '学一下'}}</text><text class="action-link" bindtap="openChallenge">{{context.kind === 'project' ? '项目证据' : '测一测'}}</text></view>
+    </view>
+  </view>
+</view>

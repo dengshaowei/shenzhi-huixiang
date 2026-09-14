@@ -1,0 +1,33 @@
+{
+  "manifest": {
+    "name": "公开示例知识库",
+    "version": "public-sample-v1",
+    "sourceType": "curated-sample",
+    "documentCount": 2,
+    "chunkCount": 2,
+    "generatedOn": "2026-09-14",
+    "notice": "这是用于复现流程的公开示例内容，不包含原项目私人知识库。"
+  },
+  "chunks": [
+    {
+      "id": "public-sensor-001",
+      "documentId": "public-sensor",
+      "title": "激光雷达与相机的互补",
+      "sourceFile": "public-sample.md",
+      "sourceType": "curated-sample",
+      "order": 1,
+      "tags": ["perception", "sensor-selection", "warehouse"],
+      "text": "激光雷达擅长提供稳定的距离和轮廓信息，相机擅长识别颜色、文字与人员等语义信息。仓储机器人选择传感器时，需要结合通道宽度、遮挡、光照、人员混行、安全冗余、成本和算力进行取舍。"
+    },
+    {
+      "id": "public-safety-001",
+      "documentId": "public-safety",
+      "title": "仓储机器人安全冗余",
+      "sourceFile": "public-sample.md",
+      "sourceType": "curated-sample",
+      "order": 1,
+      "tags": ["warehouse", "sensor-selection", "safety"],
+      "text": "单一传感器可能受遮挡、反光、黑暗或近距离盲区影响。产品方案应说明主要感知手段、失效边界和近距防撞等安全冗余，并用真实场景测试验证停止距离与误检表现。"
+    }
+  ]
+}
