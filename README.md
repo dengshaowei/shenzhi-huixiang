@@ -10,6 +10,14 @@
 - 原私人知识库已替换为两条公开示例知识；
 - Web 核心路径不需要模型 Key。
 
+## 公开资料下载
+
+- [完整资料包 Release](https://github.com/dengshaowei/shenzhi-huixiang/releases/tag/v1.0.0)
+- [脱敏可复现源码 ZIP](https://github.com/dengshaowei/shenzhi-huixiang/releases/download/v1.0.0/shenzhi-huixiang-source-v1.0.zip)
+- [作品方案 PDF](https://github.com/dengshaowei/shenzhi-huixiang/releases/download/v1.0.0/shenzhi-huixiang-proposal-v1.0.pdf)
+- [可编辑作品方案 PPT](https://github.com/dengshaowei/shenzhi-huixiang/releases/download/v1.0.0/shenzhi-huixiang-proposal-v1.0.pptx)
+- [Demo 演示视频](https://github.com/dengshaowei/shenzhi-huixiang/releases/download/v1.0.0/shenzhi-huixiang-demo-v1.0.mp4)
+
 ## 1. 最快复现：Web Demo
 
 ### 环境
