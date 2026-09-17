@@ -1,71 +1,292 @@
-# 身知回响 CloudBase 部署说明
+# 身知回响：微信小程序与 CloudBase 云端部署说明
 
-## 当前环境
+> 面向第一次接触微信小程序和腾讯云的复现者。请按顺序操作，不要只替换 AppID 和环境 ID。
 
-- 环境 ID：使用复现者自己创建的 CloudBase 环境 ID
-- 地域：上海 `ap-shanghai`
-- 套餐：个人版
-- 配置文件：仓库根目录 `cloudbaserc.json`
+## 1. 需要哪些账号
 
-环境 ID 不是密钥，可以进入版本管理。AppSecret、API Key、SecretId 和 SecretKey 不得写入项目。
+完整云端能力需要：
 
-## 已部署资源
+1. 微信账号：注册和管理微信小程序；
+2. 微信小程序账号：取得 AppID；
+3. 腾讯云账号：开通云开发 CloudBase；
+4. 模型服务账号及 API Key：启用在线问答和项目分析。
 
-### `healthCheck` 云函数
+CloudBase 是无服务器服务，**不需要另购或维护 CVM/ECS 云服务器**。云函数、云存储等资源由 CloudBase 环境管理，按套餐或实际用量计费。只体验 Web Demo 时，上述账号和模型 Key 都不需要。
 
-- Runtime：Node.js 20.19
-- 内存：256 MB
-- 超时：10 秒
-- 作用：验证小程序与 CloudBase 后台是否连通
+## 2. 注册微信小程序并取得 AppID
 
-部署和验证：
+### 2.1 注册
 
-```bash
-npx --yes --package @cloudbase/cli tcb login
-npx --yes --package @cloudbase/cli tcb fn deploy healthCheck
-npx --yes --package @cloudbase/cli tcb fn invoke healthCheck --json
+1. 打开微信公众平台：<https://mp.weixin.qq.com/>。
+2. 点击“立即注册”，账号类型选择“小程序”。
+3. 使用未注册过公众平台账号的邮箱完成激活。
+4. 选择主体类型并填写主体信息。
+5. 使用管理员微信扫码确认身份。
+6. 登录管理后台，补齐名称、头像、简介和服务类目。
+
+个人和企业主体支持的类目、认证及开放能力不同。发布前以微信公众平台实时要求为准。
+
+### 2.2 获取 AppID
+
+1. 登录微信公众平台；
+2. 进入“开发管理/开发设置”；
+3. 找到“开发者 ID”；
+4. 复制以 `wx` 开头的 AppID。
+
+AppID 是项目标识，不是密钥；AppSecret 是敏感凭证，禁止写入代码、文档、聊天记录或公开仓库。
+
+### 2.3 写入项目
+
+解压源码后，编辑源码根目录的 `project.config.json`：
+
+```json
+{
+  "appid": "替换为你自己的小程序AppID"
+}
 ```
 
-### `analyzeProject` 云函数
+公开占位 AppID 不能保证在所有微信开发者工具版本中使用。出现“不存在此 AppID”或错误码 10 时，必须换成自己注册的 AppID 或微信测试号。
 
-- Runtime：Node.js 20.19
-- 内存：512 MB
-- 超时：60 秒
-- 已部署：2026-08-04
-- DeepSeek 状态：已配置并完成远程项目分析验证（2026-08-04）
-- 作用：解析 PDF、DOCX、Markdown、TXT，调用 DeepSeek 生成项目学习计划；未配置 Key 或模型失败时返回规则降级计划
-- 隐私：小程序取得腾讯云临时下载地址供云函数读取，函数返回或失败后由小程序立即删除临时对象
+## 3. 创建腾讯云账号并关联小程序
 
-部署：
+### 3.1 创建腾讯云账号
 
-```bash
-npx --yes --package @cloudbase/cli tcb fn deploy analyzeProject --force
+1. 打开腾讯云：<https://cloud.tencent.com/>；
+2. 点击“登录/免费注册”；
+3. 推荐使用本次小程序管理员能够控制的微信扫码登录；
+4. 按页面要求完成实名认证。
+
+不要把腾讯云 SecretId、SecretKey 或登录凭证提交到项目。
+
+### 3.2 建立账号关联
+
+AppID、腾讯云账号和 CloudBase 环境必须完成关联。仅把两个 ID 写进代码不会自动获得权限。
+
+推荐顺序：
+
+1. 使用小程序管理员或开发成员微信登录微信开发者工具；
+2. 导入源码根目录，确认工具识别到正确 AppID；
+3. 点击顶部“云开发”；
+4. 首次开通时授权并选择要绑定的腾讯云账号；
+5. 已有腾讯云账号时优先绑定现有账号，避免误建多个账号；
+6. 在腾讯云账号中心检查“登录方式/微信公众平台”，确认关联的是本次小程序。
+
+腾讯云官方说明：一个腾讯云账号只能关联一个微信小程序；腾讯云侧创建但未关联小程序的 Web 环境，默认不会直接出现在微信开发者工具。
+
+官方说明：<https://cloud.tencent.com/document/product/876/57380>
+
+## 4. 创建或导入 CloudBase 环境
+
+### 4.1 从微信开发者工具创建
+
+1. 在已经导入正确 AppID 的项目中点击“云开发”；
+2. 选择“开通云开发/创建环境”；
+3. 输入环境名称，例如 `shenzhi-huixiang-dev`；
+4. 选择控制台当前支持的地域；
+5. 选择适合测试的套餐或计费方式；
+6. 创建后记录环境 ID。环境名称和环境 ID 不是同一个字段。
+
+### 4.2 使用腾讯云侧已有环境
+
+1. 确认腾讯云账号已经关联本次小程序；
+2. 在微信开发者工具打开“云开发”；
+3. 进入“设置 → 环境设置 → 管理我的环境”；
+4. 选择“使用已有腾讯云环境”；
+5. 导入或转换为小程序可以使用的环境；
+6. 返回项目，确认环境列表出现该环境。
+
+官方环境说明：<https://cloud.tencent.com/document/product/876/18438>
+
+### 4.3 环境列表为空
+
+依次检查：
+
+- 开发者工具登录微信是否拥有小程序开发权限；
+- 当前 AppID 是否正确；
+- 小程序绑定的腾讯云账号是否就是创建环境的账号；
+- 腾讯云环境是否已经导入为小程序环境；
+- 是否误用另一个微信或腾讯云账号创建环境；
+- 开发者工具版本是否存在“云开发”入口回归。
+
+若新版工具在多个项目中点击“云开发”都无响应，可临时使用官方旧稳定版或 Nightly 版开通环境。这属于工具兼容问题，不是业务代码故障。
+
+## 5. 配置环境 ID
+
+### 5.1 小程序客户端
+
+编辑 `miniprogram/config/cloud.ts`：
+
+```ts
+export const CLOUD_ENV_ID = "你的CloudBase环境ID";
 ```
 
-在腾讯云控制台进入 `analyzeProject → 函数配置 → 环境变量`，添加：
+项目使用以下方式初始化：
+
+```ts
+wx.cloud.init({
+  env: CLOUD_ENV_ID,
+  traceUser: true,
+});
+```
+
+微信小程序云开发需要基础库 2.2.3 或以上。官方快速开始：<https://cloud.tencent.com/document/product/876/121103>
+
+### 5.2 CloudBase CLI
+
+部署时推荐每条命令添加：
+
+```bash
+--env-id 你的环境ID
+```
+
+也可修改源码根目录 `cloudbaserc.json` 的 `envId`。公开提交前应恢复成占位值，避免带入个人环境标识。
+
+## 6. 安装并登录 CloudBase CLI
+
+需要 Node.js 20 或以上版本。在源码根目录执行：
+
+```bash
+npm install
+npx tcb --version
+npx tcb login
+npx tcb env list
+```
+
+`tcb login` 会打开浏览器。请使用刚才关联小程序的腾讯云主账号授权。`env list` 必须能看到目标环境；列表为空时不要继续部署，先修复账号关联。
+
+官方 CLI 说明：<https://cloud.tencent.com/document/product/876/41539>
+
+## 7. 部署四个云函数
+
+| 函数 | 作用 | 模型 Key |
+|---|---|---|
+| `healthCheck` | 检查小程序与 CloudBase 是否连通 | 不需要 |
+| `knowledgePack` | 分页提供公开示例知识 | 不需要 |
+| `studyChat` | 检索知识并生成在线学习伙伴回答 | 需要；缺失时降级 |
+| `analyzeProject` | 解析 PDF/DOCX/MD/TXT 并生成项目学习计划 | 需要；失败时降级 |
+
+依次执行：
+
+```bash
+npx tcb fn deploy healthCheck --env-id 你的环境ID
+npx tcb fn deploy knowledgePack --env-id 你的环境ID
+npx tcb fn deploy studyChat --env-id 你的环境ID
+npx tcb fn deploy analyzeProject --env-id 你的环境ID
+npx tcb fn list --env-id 你的环境ID
+```
+
+列表中应出现四个函数。CloudBase 会自动管理运行资源，不需要自行购买服务器。
+
+## 8. 创建并配置模型 API Key
+
+### 8.1 创建模型账号
+
+1. 打开所选模型服务商控制台，例如 DeepSeek 开放平台；
+2. 注册并完成服务商要求的验证；
+3. 创建 API Key；
+4. 开通足够的调用额度；
+5. 把 Key 保存在密码管理工具中。
+
+模型 API Key 与腾讯云 SecretId/SecretKey不是同一种凭证。
+
+### 8.2 写入函数环境变量
+
+在 CloudBase 控制台分别进入：
 
 ```text
-DEEPSEEK_API_KEY=你的 DeepSeek API Key
+云函数 → studyChat → 函数配置 → 环境变量
+云函数 → analyzeProject → 函数配置 → 环境变量
+```
+
+添加：
+
+```text
+DEEPSEEK_API_KEY=你的模型API Key
 DEEPSEEK_MODEL=deepseek-v4-flash
 ```
 
-不要把真实 Key 写入 `cloudbaserc.json`、`.env.example`、小程序代码或聊天记录。修改环境变量后重新部署或发布函数版本，再用一个不含敏感信息的示例文件测试。
+如果账号不支持该模型名称，按模型控制台当前可用列表调整 `DEEPSEEK_MODEL`。保存后重新部署或发布函数版本。
 
-## 小程序接入
+真实 Key 禁止写入 `project.config.json`、`cloudbaserc.json`、`.env.example`、小程序客户端和 GitHub 历史。
 
-`miniprogram/app.ts` 使用固定环境 ID 初始化 `wx.cloud`。`miniprogram/services/cloud-service.ts` 是页面访问云函数的唯一入口，外部返回值必须经过运行时校验。
+## 9. 最小云端验收
 
-本地规则 Agent 和本地进度仍然保留。云端不可用时，学习主流程不得被阻断。
+### 9.1 命令行
 
-上传体验版前必须：
+```bash
+npx tcb fn invoke healthCheck --env-id 你的环境ID --json
+npx tcb fn invoke knowledgePack --env-id 你的环境ID --params '{"page":0}' --json
+```
 
-1. 本地体验可使用根目录 `project.config.json` 中的 `touristappid`；真机和上传时替换为自己的 AppID。
-2. 在微信开发者工具中确认该 AppID 可以访问上述 CloudBase 环境。
-3. 打开“我的”，确认“CloudBase 后台”显示“已连接”。
+通过标准：
 
-## 后续资源顺序
+- 健康检查调用成功且无错误对象；
+- 控制台能看到调用日志；
+- 知识接口返回 `manifest` 和非空 `chunks`；
+- 内容标记为公开示例知识库。
 
-1. 为 `analyzeProject` 增加按微信用户和时间窗口的调用限频。
-2. 建立学习记录集合与最小权限规则，实现可选跨设备同步。
-3. 将私有知识索引迁移到云端知识库或受保护的云存储。
-4. 增加 DeepSeek 调用费用监控和每日预算告警。
+### 9.2 小程序
+
+1. 使用正确 AppID 重新编译；
+2. 控制台没有“非法环境/环境不存在”；
+3. 打开“我的”，CloudBase 状态显示已连接；
+4. 进入“学习伙伴”，提问“激光雷达怎样帮助机器人避障？”；
+5. 配有模型 Key 时收到云端回答；
+6. 断网或移除 Key 后，明确降级为本地回答，学习主流程不中断。
+
+### 9.3 项目文件分析
+
+1. 使用不含隐私的 PDF、DOCX、MD 或 TXT 文件；
+2. 在真机完成选择、上传和分析；
+3. 检查项目图谱、问题和学习计划；
+4. 检查云存储临时文件在成功或失败后均被清理。
+
+聊天文件选择必须在真实微信设备完成一次冒烟测试，开发者工具自动化无法完全替代。
+
+## 10. 模式、成本和边界
+
+| 模式 | 需要资源 | 能力 |
+|---|---|---|
+| Web 本地 Demo | Node.js、浏览器 | 本地知识检索、挑战、费曼复述、确定性掌握判定 |
+| 小程序本地模式 | 注册 AppID、微信开发者工具 | 本地课程、规则评估、进度、离线知识摘要 |
+| 小程序云端模式 | AppID、关联腾讯云账号、CloudBase环境、四个函数 | 健康检查、知识分页、云端学习伙伴、项目分析 |
+| 完整模型模式 | 以上资源及模型 Key/额度 | 在线模型讲解和项目计划 |
+
+CloudBase和模型服务的价格、免费额度及套餐会变化，本文不写死金额。以控制台实时计费说明为准。建议从最小测试套餐开始，设置模型消费上限、函数限频、超时和费用告警。
+
+## 11. 常见错误
+
+### “不存在此 AppID”或错误码 10
+
+占位 AppID 不被当前工具接受。换成自己注册的小程序 AppID或测试号。
+
+### 环境列表为空
+
+通常是登录账号不一致、小程序和腾讯云账号未关联，或腾讯云环境尚未导入小程序。
+
+### “非法环境/环境不存在”
+
+核对客户端环境 ID，并确认该 AppID有权访问该环境。
+
+### 函数部署成功但客户端调用失败
+
+检查环境关联、函数调用权限、函数名称和客户端环境 ID，再按 requestId 查看函数日志。
+
+### 在线回答进入降级模式
+
+检查 `studyChat` 的模型 Key、模型名称、余额、网络和函数超时。
+
+### 新版开发者工具“云开发”无响应
+
+先用其他项目复测；若同样无响应，换官方旧稳定版或Nightly版本开通环境，并向微信开发者工具反馈。
+
+## 12. 公开前安全检查
+
+- [ ] 没有 AppSecret；
+- [ ] 没有模型 API Key；
+- [ ] 没有腾讯云 SecretId/SecretKey；
+- [ ] 没有真实用户文件和聊天记录；
+- [ ] 没有私人知识库原文；
+- [ ] AppID 和环境 ID 已恢复为明确占位值；
+- [ ] 云函数失败不会直接解锁学习节点；
+- [ ] 项目导入临时文件有清理机制。

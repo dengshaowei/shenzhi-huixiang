@@ -7,8 +7,8 @@
 1. 安装微信开发者工具。
 2. 选择“导入项目”。
 3. 项目目录选择本仓库根目录，而不是单独选择 `miniprogram/`。
-4. `project.config.json` 默认配置为 `touristappid`。
-5. 点击“编译”。
+4. 将 `project.config.json` 中的 `your-appid` 替换为自己的小程序 AppID或测试号。
+5. 占位 AppID 不能直接编译；替换后点击“编译”。
 
 ## 核心体验路径
 
@@ -26,7 +26,7 @@
 ## 启用自己的云环境
 
 1. 创建微信小程序和CloudBase环境。
-2. 用自己的小程序AppID替换根目录 `project.config.json` 中的 `touristappid`。
+2. 用自己的小程序AppID替换根目录 `project.config.json` 中的 `your-appid`。
 3. 用自己的环境ID替换 `config/cloud.ts` 中的 `your-cloudbase-env-id`。
 4. 按 [CloudBase部署说明](../docs/CloudBase-部署说明.md) 部署云函数。
 5. 模型密钥只写入云函数环境变量，禁止写入小程序代码。
@@ -45,4 +45,3 @@ npm run typecheck:mini
 ```
 
 微信页面的最终编译、文件选择和真机交互需要在微信开发者工具及真实设备上验证。
-

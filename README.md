@@ -4,7 +4,7 @@
 
 本公开包已经脱敏：
 
-- 微信 AppID 使用游客模式；
+- 微信 AppID 使用明确占位值，复现小程序前需替换为自己的 AppID；
 - CloudBase 环境 ID 使用占位符；
 - 不包含 API Key、个人路径、用户文件或运行日志；
 - 原私人知识库已替换为两条公开示例知识；
@@ -66,8 +66,8 @@ npm run build
 
 1. 安装微信开发者工具。
 2. 选择“导入项目”，目录选择仓库根目录。
-3. `project.config.json` 默认使用 `touristappid`，可直接本地编译。
-4. 如需真机、上传或云能力，把游客 AppID 替换成自己的小程序 AppID。
+3. 将 `project.config.json` 中的 `your-appid` 替换成自己的小程序 AppID或测试号。
+4. 占位 AppID 不能直接编译；不具备小程序账号时请先复现无需 AppID 的Web Demo。
 5. 如需云函数，把 `miniprogram/config/cloud.ts` 中的 `your-cloudbase-env-id` 替换成自己的环境 ID。
 6. 没有云环境时，学习主流程仍可使用本地课程、示例知识和确定性规则。
 
@@ -130,7 +130,7 @@ scripts/             知识库构建脚本
 ## 9. 当前复现边界
 
 - Web Agent Demo：可完全离线复现。
-- 小程序本地主流程：可使用游客 AppID编译和体验。
+- 小程序本地主流程：需要复现者自己的小程序 AppID或测试号。
 - 真机、体验版与正式发布：需要复现者自己的微信小程序账号。
 - 在线模型与项目文件分析：需要复现者自己的CloudBase环境和模型密钥。
 
