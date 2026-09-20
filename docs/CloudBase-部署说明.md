@@ -177,37 +177,101 @@ npx tcb fn list --env-id 你的环境ID
 
 列表中应出现四个函数。CloudBase 会自动管理运行资源，不需要自行购买服务器。
 
-## 8. 创建并配置模型 API Key
+## 8. 创建并配置模型 Token / API Key
 
-### 8.1 创建模型账号
-
-1. 打开所选模型服务商控制台，例如 DeepSeek 开放平台；
-2. 注册并完成服务商要求的验证；
-3. 创建 API Key；
-4. 开通足够的调用额度；
-5. 把 Key 保存在密码管理工具中。
-
-模型 API Key 与腾讯云 SecretId/SecretKey不是同一种凭证。
-
-### 8.2 写入函数环境变量
-
-在 CloudBase 控制台分别进入：
+本项目中的“Token”指 DeepSeek 开放平台生成的 **API Key**。源码通过以下请求头调用模型：
 
 ```text
-云函数 → studyChat → 函数配置 → 环境变量
-云函数 → analyzeProject → 函数配置 → 环境变量
+Authorization: Bearer <DEEPSEEK_API_KEY>
 ```
 
-添加：
+它不是微信小程序 AppID/AppSecret，也不是腾讯云 SecretId/SecretKey，更不是 CloudBase CLI 的登录凭证。不要把这几类凭证互相替换。
+
+### 8.1 注册 DeepSeek 开放平台账号
+
+1. 在浏览器打开 `https://platform.deepseek.com/`；
+2. 单击登录或注册，使用本人可以长期接收验证码的账号完成登录；
+3. 按控制台当前要求完成实名认证或账号验证；
+4. 进入余额或计费页面，确认账户具有可用额度；
+5. 如平台要求充值，先使用小额测试额度，避免首次验证产生不必要费用。
+
+模型平台的登录账号与腾讯云账号相互独立；即使 CloudBase 已开通，也不会自动获得模型调用额度。
+
+### 8.2 创建 API Key
+
+1. 登录 DeepSeek 开放平台后，进入 **API Keys / API 密钥** 页面；
+2. 单击 **创建 API Key**；
+3. 名称建议填写 `shenzhi-cloudbase-prod`；如果有测试环境，可另建 `shenzhi-cloudbase-test`；
+4. 创建后立即复制完整 Key，并保存到密码管理工具；
+5. 不要在聊天、截图、文档或 GitHub Issue 中展示完整 Key；
+6. 如果页面关闭后无法再次查看完整值，删除旧 Key 并重新创建，不要猜测或拼接。
+
+复制时只复制 Key 本体，不要带引号、空格、换行，也不要手工添加 `Bearer `。云函数代码会自动组成 Bearer 请求头。
+
+### 8.3 确认模型名称
+
+1. 在 DeepSeek 控制台或官方 API 文档中查看当前账号可调用的模型 ID；
+2. 本项目默认读取 `DEEPSEEK_MODEL`，未配置时使用 `deepseek-v4-flash`；
+3. 如果控制台没有这个模型，把环境变量改成账号实际支持的模型 ID；
+4. 模型名称必须逐字一致，不要填写控制台展示的中文昵称。
+
+若返回 `model_not_found`、HTTP 400 或“模型无权限”，通常是模型名称不受当前账号支持，而不是 API Key 格式错误。
+
+### 8.4 在 CloudBase 控制台写入环境变量
+
+先确认 `studyChat` 和 `analyzeProject` 已经部署。然后分别执行：
+
+1. 打开腾讯云 CloudBase 控制台并选择正确环境；
+2. 进入 **云函数**；
+3. 单击 `studyChat`；
+4. 进入 **函数配置**，找到 **环境变量**；
+5. 新增变量 `DEEPSEEK_API_KEY`，值粘贴为刚创建的完整 API Key；
+6. 新增变量 `DEEPSEEK_MODEL`，值填写已确认的模型 ID；
+7. 保存配置；如页面提示发布新版本或重新部署，按提示完成；
+8. 对 `analyzeProject` 重复上述操作。
+
+两个函数都需要添加，最终配置应为：
 
 ```text
-DEEPSEEK_API_KEY=你的模型API Key
-DEEPSEEK_MODEL=deepseek-v4-flash
+studyChat
+  DEEPSEEK_API_KEY=<完整API Key，不加引号和Bearer前缀>
+  DEEPSEEK_MODEL=<账号支持的模型ID>
+
+analyzeProject
+  DEEPSEEK_API_KEY=<同一个或单独创建的完整API Key>
+  DEEPSEEK_MODEL=<账号支持的模型ID>
 ```
 
-如果账号不支持该模型名称，按模型控制台当前可用列表调整 `DEEPSEEK_MODEL`。保存后重新部署或发布函数版本。
+环境变量是“函数级”配置：只给 `studyChat` 添加不会自动同步到 `analyzeProject`。CloudBase 单个函数的环境变量总大小存在限制，本项目这两个短变量不会接近该限制。
 
-真实 Key 禁止写入 `project.config.json`、`cloudbaserc.json`、`.env.example`、小程序客户端和 GitHub 历史。
+### 8.5 检查环境变量是否生效
+
+1. 在 CloudBase 控制台打开 `studyChat` 的函数日志；
+2. 回到小程序“学习伙伴”，发送一条不含隐私的测试问题；
+3. 确认页面没有显示“未配置 API Key”的本地降级提示；
+4. 日志中应出现一次正常函数调用，但不应打印完整 Key；
+5. 再在真机导入一份不含隐私的短 Markdown/TXT 文件，验证 `analyzeProject`；
+6. 两个函数都通过后，再进行完整 Demo。
+
+常见返回及处理方式：
+
+| 现象 | 常见原因 | 处理方式 |
+|---|---|---|
+| 提示未配置 API Key | 变量名拼错、只配置了另一个函数、配置未发布 | 核对必须为 `DEEPSEEK_API_KEY`，保存并重新发布函数 |
+| HTTP 401 / authentication failed | Key 缺失、失效、复制不完整或多了空格 | 在模型平台重建 Key，重新粘贴 Key 本体 |
+| HTTP 402 / insufficient balance | 模型账号没有可用额度 | 在模型平台查看余额和计费状态 |
+| HTTP 400 / model not found | `DEEPSEEK_MODEL` 不受当前账号支持 | 改成控制台当前可用的模型 ID |
+| 请求超时或云函数失败 | 外网访问、函数超时或模型响应过慢 | 查看 CloudBase 日志，适当调整函数超时后重新测试 |
+| 学习功能仍能使用但显示本地回答 | 云端调用失败后触发了设计内的规则降级 | 先按日志修复；这是正常的安全降级，不代表规则流程损坏 |
+
+### 8.6 Key 的安全与轮换
+
+- 真实 Key 只能保存在服务端云函数环境变量或合规的密钥管理服务中；
+- 禁止写入 `project.config.json`、`cloudbaserc.json`、`.env.example`、小程序客户端代码和 GitHub 历史；
+- 不要通过小程序前端请求模型 API，否则用户可以提取 Key；
+- 怀疑泄露时，立即在模型平台删除/禁用旧 Key，创建新 Key，并更新两个云函数；
+- 建议测试和正式环境使用不同 Key，便于撤销、统计和控制费用；
+- 在模型平台设置用量提醒或预算，并在 CloudBase 查看函数调用量，避免异常消耗。
 
 ## 9. 最小云端验收
 
